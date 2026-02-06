@@ -1,4 +1,5 @@
 function createDataset(fields, constraints, sortFields) {
+	log.info("### ds_verProcessosAnaliseII - INICIADO");
 	var newDataset = DatasetBuilder.newDataset();
 
 	// VALOR CONFORME PARAMETROS
@@ -21,7 +22,7 @@ function createDataset(fields, constraints, sortFields) {
     		}
     
     if(xDT_INI==''){
-		log.error("### ds_verProcessosAnaliseII ERROr --> " + e.message);
+		log.error("### ds_verProcessosAnaliseII ERROR --> " + e.message);
 		newDataset.addColumn('ERRROR');
 		newDataset.addRow(['Os parametros de data inicial e final são necessários por conta do volume de dados para extração.','Utilize períodos preferencialmente mensais para extração']);
 		return newDataset;
@@ -29,16 +30,16 @@ function createDataset(fields, constraints, sortFields) {
 	
 	var minhaQuery =
 		" SELECT "+
-		" 	PW.NUM_PROCES 'NR_SOLICITACAO', "+
-		" 	DP.DES_DEF_PROCES 'PROCESSO', "+
-		" 	FU1.FULL_NAME 'SOLICITANTE', "+
-		" 	PW.START_DATE 'DATA_INI', "+
-		" 	PW.END_DATE 'DATA_FIM', "+
+		" 	IFNULL(PW.NUM_PROCES, 0) as 'NR_SOLICITACAO', "+
+		" 	IFNULL(DP.DES_DEF_PROCES, '') as 'PROCESSO', "+
+		" 	IFNULL(FU1.FULL_NAME, '') as 'SOLICITANTE', "+
+		" 	IFNULL(PW.START_DATE, '') as 'DATA_INI', "+
+		" 	IFNULL(PW.END_DATE, '') as 'DATA_FIM', "+
 		" 	(CASE PW.STATUS WHEN 0 THEN 'ABERTO' "+
 		" 		            WHEN 1 THEN 'CANCELADO' "+
 		" 		            WHEN 2 THEN 'FINALIZADO' END) AS 'STATUS_PROCESSO', "+
-		" 	EP.NOM_ESTADO 'ATIVIDADE', "+
-		" 	FU2.FULL_NAME 'APROVADOR' "+
+		" 	IFNULL(EP.NOM_ESTADO, '') as 'ATIVIDADE', "+
+		" 	IFNULL(FU2.FULL_NAME, '') as 'APROVADOR' "+
 		" FROM PROCES_WORKFLOW PW "+
 		"   LEFT OUTER JOIN FDN_USERTENANT  FT1 ON FT1.USER_CODE        = PW.COD_MATR_REQUISIT "+ 
 		" 	LEFT OUTER JOIN FDN_USER        FU1 ON FT1.USER_ID          = FU1.USER_ID "+   
@@ -61,7 +62,7 @@ function createDataset(fields, constraints, sortFields) {
 		"   and PW.START_DATE >= "+xDT_INI+
 		"   and PW.START_DATE <= "+xDT_FIM;
 	
-	log.info("start - ds_verProcessosAnaliseI QUERY: " + minhaQuery);
+	log.info("### ds_verProcessosAnaliseII QUERY: " + minhaQuery);
 	var dataSource = "/jdbc/AppDS";
 	
 	var conn = null;
@@ -92,8 +93,8 @@ function createDataset(fields, constraints, sortFields) {
 			newDataset.addRow(Arr);
 		}
 	} catch (e) {
-		log.error("### ds_verProcessosAnaliseI ERROr --> " + e.message);
-		newDataset.addColumn('ERRROR');
+		log.error("### ds_verProcessosAnaliseII ERROR --> " + e.message);
+		newDataset.addColumn('ERROR');
 		newDataset.addRow([e.message]);
 	} finally {
 		if (rs != null)
@@ -105,5 +106,6 @@ function createDataset(fields, constraints, sortFields) {
 		if (conn != null)
 			conn.close();
 	}
+	log.info("### ds_verProcessosAnaliseII - FINALIZADO");
 	return newDataset;
 }
