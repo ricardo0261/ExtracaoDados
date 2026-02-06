@@ -1,1 +1,0 @@
-var APROVACAO_GESTOR = 8;

@@ -1,0 +1,89 @@
+<html>
+<head>
+	<link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css" />
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+	<script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+	
+	<link type="text/css" rel="stylesheet" href="css/custom.css" />
+
+	<title>Parametros Widget Extração de Dados</title>
+	<!-- dataSet = ds_ParamsExtracaoDados -->
+</head>
+<script>
+	setTimeout(function() {
+		FLUIGC.switcher.init( '#seSomenteAdmin' );
+	}, 1000);
+	function defineValor(obj) {
+		if (obj.checked) {
+			$('#aux_seSomenteAdmin').val('sim');
+		} else {
+			$('#aux_seSomenteAdmin').val('nao');
+		}
+	}
+	var beforeSendValidate = function(numState) {
+		var txtDataset     = $('#txtDataset'        ).val();
+		var nomeDataset    = $('#nomeDataset'       ).val();
+		var seSomenteAdmin = $('#aux_seSomenteAdmin').val();
+		if (txtDataset == '') {
+			FLUIGC.toast({
+				title: 'Atenção:',
+				message: 'Informe o nome de exibição do dataset',
+				type: 'danger'
+			});
+			return false;
+		}
+		if (nomeDataset == '') {
+			FLUIGC.toast({
+				title: 'Atenção:',
+				message: 'Informe o nome interno do dataset',
+				type: 'danger'
+			});
+			return false;
+		}
+		if (seSomenteAdmin != 'sim' || seSomenteAdmin != 'nao') {
+			FLUIGC.toast({
+				title: 'Atenção:',
+				message: 'Informe se o dataset é somente para administradores ou não',
+				type: 'danger'
+			});
+			return false;
+		}
+		return true;
+	}
+</script>
+<body>
+	<div class="fluig-style-guide">
+		<form name="form" role="form">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Parâmetros Widget Extração de Dados</h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-md-4">
+								<label>Nome de Exibi&ccedil;&atilde;o do Dataset</label>
+								<input type="text" class="form-control" id="txtDataset" name="txtDataset" placeholder="Nome de Exibição...">
+							</div>
+							<div class="col-md-4">
+								<label>Nome Interno do Dataset</label>
+								<input type="text" class="form-control" id="nomeDataset" name="nomeDataset" placeholder="Nome Interno...">
+							</div>
+							<div class="col-md-2">
+								<input type="hidden" id="aux_seSomenteAdmin" name="aux_seSomenteAdmin" value="sim">
+								<label>Somente Admin?</label>
+								<input type="checkbox" class="form-control"
+									name="seSomenteAdmin" id="seSomenteAdmin" onchange="defineValor(this);"
+									data-on-color="success" data-off-color="danger"
+									data-on-text="Sim"      data-off-text="N&atilde;o" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>
